@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd ">
+
+
+    <context:component-scan base-package="com.yicj.shiro.web.controller"/>
+
+
+    <!--开启aop，对类代理-->
+    <aop:config proxy-target-class="true" />
+    <!--开启shiro注解支持-->
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager" />
+    </bean>
+
+    <!--
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>-->
+
+
+    <bean id="fastJsonConfig" class="com.alibaba.fastjson.support.config.FastJsonConfig" >
+        <property name="serializerFeatures">
+            <list>
+                <!-- 输出key时是否使用双引号 -->
+                <value>QuoteFieldNames</value>
+                <!-- 是否输出值为null的字段 -->
+                <!-- <value>WriteMapNullValue</value> -->
+                <!-- 数值字段如果为null,输出为0,而非null -->
+                <value>WriteNullNumberAsZero</value>
+                <!-- List字段如果为null,输出为[],而非null -->
+                <value>WriteNullListAsEmpty</value>
+                <!-- 字符类型字段如果为null,输出为"",而非null -->
+                <value>WriteNullStringAsEmpty</value>
+                <!-- Boolean字段如果为null,输出为false,而非null -->
+                <value>WriteNullBooleanAsFalse</value>
+                <!-- null String不输出  -->
+                <value>WriteNullStringAsEmpty</value>
+                <!-- null String也要输出  -->
+                <!-- <value>WriteMapNullValue</value> -->
+                <!-- Date的日期转换器 -->
+                <value>WriteDateUseDateFormat</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true" >
+
+            <!--配置@ResponseBody由fastjson解析-->
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property name="supportedMediaTypes" value="application/json"/>
+                <property name="fastJsonConfig" ref="fastJsonConfig"/>
+            </bean>
+
+            <bean class="com.yicj.shiro.web.util.Utf8StringHttpMessageConverter"/>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- -->
+    <mvc:resources mapping="/public/**" location="/resources/public/" />
+    <mvc:resources mapping="/dist/**" location="/resources/dist/" />
+
+    <!--统一异常处理-->
+    <bean class="com.yicj.shiro.exception.CustomExceptionResolver"/>
+
+
+</beans>

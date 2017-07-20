@@ -1,0 +1,16 @@
+.DS_Store
+node_modules/
+dist/
+.vscode/
+target/
+classes/
+.idea/
+ShiroStu.iml
+ShiroStu.ipr
+ShiroStu.iws
+.settings/
+.project
+.classpath
+ts-build/
+lib/
+src/main/webapp/META-INF/

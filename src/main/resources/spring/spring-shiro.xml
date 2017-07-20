@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 安全管理器 -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="customRealm" />
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="sessionManager" ref="sessionManager" />
+        <property name="rememberMeManager" ref="rememberMeManager" />
+    </bean>
+
+    <!-- 自定义 realm -->
+    <bean id="customRealm" class="com.yicj.shiro.realm.CustomRealm" >
+        <!--将凭证匹配器设置到realm中，realm按照凭证匹配器的要求进行散列-->
+        <property name="credentialsMatcher" ref="credentialsMatcher"/>
+    </bean>
+
+    <!--密码匹配器-->
+    <bean id="credentialsMatcher"
+          class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+        <property name="hashAlgorithmName" value="md5"/>
+        <property name="hashIterations" value="1"/>
+    </bean>
+
+    <!--cache策略配置-->
+    <bean id ="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManagerConfigFile" value="classpath:shiro-ehcache.xml"/>
+    </bean>
+
+    <!--会话管理器配置-->
+    <bean id = "sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+        <!--session的失效时长,单位为毫秒,暂时配置一个小时-->
+        <property name="globalSessionTimeout" value="3600000"/>
+        <!--删除失效的session-->
+        <property name="deleteInvalidSessions" value="true" />
+    </bean>
+
+    <!--rememberMeManager 管理器-->
+    <bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+        <property name="cookie" ref="rememberMeCookie" />
+    </bean>
+    <!--记住我cookie-->
+    <bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <constructor-arg value="rememberMe"/>
+        <!--记住cookie生效时间30天-->
+        <property name="maxAge" value="2592000"/>
+    </bean>
+
+
+
+    <!-- 基于Form表单的身份验证过滤器，不配置将也会注册此过虑器，表单中的用户账号、密码及loginurl将采用默认值，建议配置 -->
+    <!--com.yicj.shiro.web.filter.CustomFormAuthenticationFilter-->
+    <!--org.apache.shiro.web.filter.authc.FormAuthenticationFilter-->
+    <bean id="formAuthenticationFilter"
+          class="com.yicj.shiro.web.filter.CustomFormAuthenticationFilter">
+        <!-- 表单中账号的input名称 -->
+        <property name="usernameParam" value="username" />
+        <!-- 表单中密码的input名称 -->
+        <property name="passwordParam" value="password" />
+        <property name="rememberMeParam" value="rememberMe"></property>
+    </bean>
+
+
+
+    <!-- Shiro 的Web过滤器 -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager" />
+        <!-- 如果没有认证将要跳转的登陆地址，http可访问的url，如果不在表单认证过虑器FormAuthenticationFilter中指定此地址就为身份认证地址 -->
+        <property name="loginUrl" value="/api/login.action" />
+        <!-- 没有权限跳转的地址-->
+        <property name="unauthorizedUrl" value="/refuse.jsp" />
+        <property name="filters">
+            <map>
+                <entry key="authc" value-ref="formAuthenticationFilter"></entry>
+            </map>
+        </property>
+        <!-- shiro拦截器配置 -->
+        <property name="filterChainDefinitions">
+            <value>
+                <!-- 对静态资源设置匿名访问 -->
+                /images/**=anon
+                /js/**=anon
+                /styles/**=anon
+                /login.jsp=anon
+                <!-- 请求 logout.action地址，shiro去清除session-->
+                /api/logout.action = logout
+                /welcome.jsp = user
+                /userEdit.jsp=perms[user:edit]
+                /api/userDelete.action=perms[user:delete]
+                <!-- /** = authc 所有url都必须认证通过才可以访问-->
+                /** = authc
+                <!-- /** = anon所有url都可以匿名访问 -->
+            </value>
+        </property>
+    </bean>
+
+
+</beans>

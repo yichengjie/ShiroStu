@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <contextName>ShiroStu</contextName>
+    <!--
+    <property resource="resource1.properties" />
+    -->
+    <property name="devLogBasePath" value="/Users/yichengjie/applog/ShiroStu"></property>
+    <property name="prodLogBasePath" value="/opt/app/jboss-eap-5.0/tomcat/tomcat8989/applog/ShiroStu"></property>
+    <property name="appLogBasePath" value="${devLogBasePath}"></property>
+
+    <!--日志输入格式变量设置 start-->
+    <property name="logPattern1" value="%d{HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n" ></property>
+    <property name="logPattern" value="${logPattern1}" ></property>
+    <!--日志输入格式变量设置 ends-->
+
+
+    <!-- 日志输出的通道 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder 默认配置为PatternLayoutEncoder -->
+        <encoder>
+            <pattern>${logPattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <!-- 按照每天生成日志文件 -->
+    <appender name="log"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${appLogBasePath}/log.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${appLogBasePath}/log.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logPattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <!--日志文件最大的大小-->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>30MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <appender name="error"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${appLogBasePath}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${appLogBasePath}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logPattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--<logger name="java.sql.Connection" level="DEBUG" />-->
+    <!--<logger name="java.sql.Statement" level="DEBUG" />-->
+    <!--<logger name="java.sql.PreparedStatement" level="DEBUG" />-->
+
+    <logger name="com.yicj.shiro" level="error"  >
+        <appender-ref ref="error"/>
+    </logger>
+
+    <logger name="com.yicj.shiro" level="info">
+        <appender-ref ref="log"/>
+    </logger>
+
+    <!-- 也是<loger>元素，但是它是根loger。只有一个level属性，应为已经被命名为"root". -->
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
