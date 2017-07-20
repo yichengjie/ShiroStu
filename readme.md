@@ -1,5 +1,3 @@
-- 参考文档 `http://www.cnblogs.com/coderland/p/5902867.html`
-
 - 1.下载后使用`mvn eclipse:eclipse` 或则 `mvn idea:idea` 
   命令生成eclipse 或idea的maven项目，然后import即可
 
