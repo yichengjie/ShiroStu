@@ -20,7 +20,10 @@
     <fastjson.version>1.2.34</fastjson.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <shiro.version>1.3.2</shiro.version>
+    <!--
     <ehcache-core.version>2.6.11</ehcache-core.version>
+    -->
+    <ehcache.version>3.1.3</ehcache.version>
     <shiro-ehcache.version>1.2.4</shiro-ehcache.version>
   </properties>
 
@@ -83,7 +86,6 @@
       <version>${spring.version}</version>
     </dependency>
 
-
     <!--使用AspectJ方式注解需要相应的包-->
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -91,7 +93,7 @@
       <version>${aspectjweaver.version}</version>
     </dependency>
 
-    <!--spring 相关start-->
+    <!--spring 相关end-->
 
 
     <!--spring test start-->
@@ -159,16 +161,23 @@
       <version>${shiro.version}</version>
     </dependency>
 
+    <!--
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
       <version>${ehcache-core.version}</version>
-    </dependency>
+    </dependency>-->
 
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-ehcache</artifactId>
       <version>${shiro-ehcache.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <version>${ehcache.version}</version>
     </dependency>
     <!-- shiro end-->
 
